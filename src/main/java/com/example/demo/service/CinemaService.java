@@ -78,14 +78,17 @@ public class CinemaService {
     @Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Exception.class)
     public BookingResponse bookSeats(CreateBookingRequest bookingRequest) throws Exception {
         BookingResponse response = new BookingResponse(true,"");
-        BookingEntity bookingEntity = bookingRepository.save(BookingEntity.builder().createdOn(DateTimeUtils.getCurrentDateTime()).noOfSeats(bookingRequest.getSeatIds().size()).status(BookingStatus.REQUESTED).build());
+        BookingEntity bookingEntity = bookingRepository.save(BookingEntity.builder().createdOn(DateTimeUtils.getCurrentDateTime()).noOfSeats(bookingRequest.getSeatIds().size()).status(BookingStatus.REQUESTED.name()).build());
         try {
             showSeatBookingDao.updateTable(bookingEntity.getId(), bookingRequest.getSeatIds(), bookingRequest.getShowId());
         }
         catch(Exception e){
-            bookingRepository.delete(bookingEntity);
+            bookingEntity.setStatus(BookingStatus.FAILED.name());
+            bookingRepository.save(bookingEntity);
             throw e;
         }
+        bookingEntity.setStatus(BookingStatus.CONFIRMED.name());
+        bookingRepository.save(bookingEntity);
         response.setBookingId(bookingEntity.getId());
         return response;
     }

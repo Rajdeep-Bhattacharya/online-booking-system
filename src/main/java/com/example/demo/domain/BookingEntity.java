@@ -28,5 +28,5 @@ public class BookingEntity {
     private LocalDateTime createdOn;
 
     @Column(name = "status")
-    private BookingStatus status;
+    private String status;
 }
