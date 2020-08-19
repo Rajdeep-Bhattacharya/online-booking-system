@@ -65,7 +65,6 @@ public class AdminService {
                         .totalSeats(k.getTotalSeats()).build())
                 .collect(Collectors.toList());
         cinemaHallRepository.saveAll(cinemaHallEntities);
-        // TODO : might have to iterate over iterable
         Map<String, Integer> nameToIdMap = cinemaHallEntities.stream().collect(Collectors.toMap(CinemaHallEntity::getName, CinemaHallEntity::getId));
 
         for (CinemaHall cinemaHall : createCinemaRequest.getCinemaHallsList()) {
@@ -105,13 +104,6 @@ public class AdminService {
 
 
     public CreateShowResponse createShow(CreateShowRequest createShowRequest) {
-        Optional<MovieEntity> movieEntityOptional = movieRepository.findByTitle(createShowRequest.getMovieTitle());
-        if (!movieEntityOptional.isPresent())
-            return CreateShowResponse.builder().error("movie does not exist please create the movie").response(false).build();
-        Optional<CinemaHallEntity> cinemaHallEntityOptional = cinemaHallRepository.findByName(createShowRequest.getCinemaHallName());
-        if (!cinemaHallEntityOptional.isPresent()) {
-            return CreateShowResponse.builder().error("cinema hall does not exist please create the movie").response(false).build();
-        }
         LocalDateTime created =  DateTimeUtils.getCurrentDateTime();
         LocalDateTime startTime = DateTimeUtils.getLocalDateTimefromString(createShowRequest.getStartTime(),DateTimeUtils.format);
         LocalDateTime endTime = DateTimeUtils.getLocalDateTimefromString(createShowRequest.getEndTime(),DateTimeUtils.format);
@@ -121,7 +113,13 @@ public class AdminService {
         if(showRepository.findOverlappingShows(startTime.toString(),endTime.toString(),createShowRequest.getCinemaHallName()) > 0){
             return CreateShowResponse.builder().error("show with overlapping start or end exists").response(false).build();
         }
-
+        Optional<MovieEntity> movieEntityOptional = movieRepository.findByTitle(createShowRequest.getMovieTitle());
+        if (!movieEntityOptional.isPresent())
+            return CreateShowResponse.builder().error("movie does not exist please create the movie").response(false).build();
+        Optional<CinemaHallEntity> cinemaHallEntityOptional = cinemaHallRepository.findByName(createShowRequest.getCinemaHallName());
+        if (!cinemaHallEntityOptional.isPresent()) {
+            return CreateShowResponse.builder().error("cinema hall does not exist please create the movie").response(false).build();
+        }
         ShowsEntity showsEntity = showRepository.save(ShowsEntity.builder()
                 .created(created)
                 .endTime(endTime)
