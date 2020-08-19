@@ -115,6 +115,10 @@ public class AdminService {
         LocalDateTime created =  DateTimeUtils.getCurrentDateTime();
         LocalDateTime startTime = DateTimeUtils.getLocalDateTimefromString(createShowRequest.getStartTime(),DateTimeUtils.format);
         LocalDateTime endTime = DateTimeUtils.getLocalDateTimefromString(createShowRequest.getEndTime(),DateTimeUtils.format);
+        if(showRepository.findOverlappingShows(startTime.toString(),endTime.toString(),createShowRequest.getCinemaHallName()) > 0){
+            return CreateShowResponse.builder().error("show with overlapping start or end exists").response(false).build();
+        }
+
         ShowsEntity showsEntity = showRepository.save(ShowsEntity.builder()
                 .created(created)
                 .endTime(endTime)
