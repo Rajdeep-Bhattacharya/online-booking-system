@@ -6,6 +6,7 @@ import com.example.demo.models.CinemaHallSeat;
 import com.example.demo.models.request.CreateBookingRequest;
 import com.example.demo.models.response.BookingResponse;
 import com.example.demo.models.response.GetAvailableSeatsResponse;
+import com.example.demo.models.response.GetMoviesFromCityResponse;
 import com.example.demo.service.CinemaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,6 +54,11 @@ public class CinemaController {
         catch(Exception e){
             return new ResponseEntity<>(new BookingResponse(false,e.getMessage()),HttpStatus.OK);
         }
-
     }
+    @RequestMapping(value = "/city/movies", method = RequestMethod.GET , produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetMoviesFromCityResponse> getMoviesInCity(@RequestParam(value = "city",required = true) String city){
+        return new ResponseEntity<>(cinemaService.getMoviesFromCity(city),HttpStatus.OK);
+    }
+
+
 }

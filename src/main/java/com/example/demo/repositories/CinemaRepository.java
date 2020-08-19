@@ -10,6 +10,6 @@ import java.math.BigInteger;
 import java.util.List;
 
 public interface CinemaRepository extends CrudRepository<CinemaEntity,Integer> {
-    @Query(value = "select city from cinema", nativeQuery = true)
+    @Query(value = "select distinct city from cinema", nativeQuery = true)
     List<String> findAllCities();
 }

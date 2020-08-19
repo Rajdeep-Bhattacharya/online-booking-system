@@ -14,10 +14,8 @@ import com.example.demo.models.CinemaHallSeat;
 import com.example.demo.models.request.CreateBookingRequest;
 import com.example.demo.models.response.BookingResponse;
 import com.example.demo.models.response.GetAvailableSeatsResponse;
-import com.example.demo.repositories.BookingRepository;
-import com.example.demo.repositories.CinemaRepository;
-import com.example.demo.repositories.ShowRepository;
-import com.example.demo.repositories.ShowSeatBookingRepository;
+import com.example.demo.models.response.GetMoviesFromCityResponse;
+import com.example.demo.repositories.*;
 import com.example.demo.utils.DateTimeUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -36,8 +34,9 @@ public class CinemaService {
     private HallSeatDao hallSeatDao;
     private BookingRepository bookingRepository;
     private ShowSeatBookingDao showSeatBookingDao;
+    private MovieRepository movieRepository;
 
-    public CinemaService(CinemaRepository cinemaRepository,ShowRepository showRepository,AdminHelper adminHelper,ShowSeatBookingRepository showSeatBookingRepository,HallSeatDao hallSeatDao,BookingRepository bookingRepository,ShowSeatBookingDao showSeatBookingDao){
+    public CinemaService(CinemaRepository cinemaRepository,ShowRepository showRepository,AdminHelper adminHelper,ShowSeatBookingRepository showSeatBookingRepository,HallSeatDao hallSeatDao,BookingRepository bookingRepository,ShowSeatBookingDao showSeatBookingDao,MovieRepository movieRepository){
         this.cinemaRepository = cinemaRepository;
         this.showRepository = showRepository;
         this.adminHelper = adminHelper;
@@ -45,6 +44,7 @@ public class CinemaService {
         this.hallSeatDao = hallSeatDao;
         this.bookingRepository = bookingRepository;
         this.showSeatBookingDao = showSeatBookingDao;
+        this.movieRepository = movieRepository;
     }
 
 
@@ -75,6 +75,15 @@ public class CinemaService {
         response.getAvailable().addAll(hallSeatList);
         return response;
     }
+
+    public GetMoviesFromCityResponse getMoviesFromCity(String city){
+        GetMoviesFromCityResponse response = new GetMoviesFromCityResponse("",true);
+        if(!city.isEmpty())
+            response.getMovies().addAll(movieRepository.findMovieTitleByCity(city));
+        return response;
+    }
+
+
     @Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Exception.class)
     public BookingResponse bookSeats(CreateBookingRequest bookingRequest) throws Exception {
         BookingResponse response = new BookingResponse(true,"");

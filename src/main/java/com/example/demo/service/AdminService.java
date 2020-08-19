@@ -95,6 +95,7 @@ public class AdminService {
                     .language(createMovieRequest.getLanguage())
                     .releaseDate(dateTime)
                     .title(createMovieRequest.getTitle())
+                    .city(createMovieRequest.getCity())
                     .build());
         } catch (Exception e) {
             System.out.println("failed to parse date");
