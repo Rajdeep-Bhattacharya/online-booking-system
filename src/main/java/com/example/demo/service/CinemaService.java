@@ -53,9 +53,9 @@ public class CinemaService {
     }
 
     public List<Cinema> getCinemasWithAShowOfAGivenMovie(String movieTitle){
-        List<Integer> cinemaIds = showRepository.findCinemaIdByMovieTitle(movieTitle);
+        List<Integer> cinemaIds = showRepository.findCinemaIdByMovieTitle(movieTitle,DateTimeUtils.getCurrentDateTime().toString());
         Iterable<CinemaEntity> cinemaEntityIterable = cinemaRepository.findAllById(cinemaIds);
-        Iterable<ShowsEntity> showsEntityIterable = showRepository.findByMovieTitle(movieTitle);
+        Iterable<ShowsEntity> showsEntityIterable = showRepository.findByMovieTitleAndStartTimeAfter(movieTitle,DateTimeUtils.getCurrentDateTime());
 
         List<CinemaEntity> cinemaEntityList = new ArrayList<>();
         cinemaEntityIterable.forEach(cinemaEntityList::add);
